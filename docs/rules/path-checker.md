@@ -1,6 +1,8 @@
 # feature sliced relative path checker (`path-checker`)
 
-Please describe the origin of the rule here.
+This plugin allows you to set rules for Eslint which determines whether the path is relative or absolute within the current slice (according to FSD terminology).
+
+Since the FSD architecture uses the Public API, all paths within one slice must be relative.
 
 ## Rule Details
 

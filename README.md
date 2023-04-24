@@ -41,8 +41,6 @@ Then configure the rules you want to use under the rules section.
 
 ## Rules
 
-<!-- begin auto-generated rules list -->
-TODO: Run eslint-doc-generator to generate the rules list.
-<!-- end auto-generated rules list -->
+This plugin allows you to set rules for Eslint which determines whether the path is relative or absolute within the current slice (according to FSD terminology).
 
-
+Since the FSD architecture uses the Public API, all paths within one slice must be relative.
