@@ -1,49 +1,72 @@
-/**
- * @fileoverview feature sliced relative path checker
- * @author Slavio
- */
 "use strict";
-
-//------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
 
 const rule = require("../../../lib/rules/path-checker"),
     RuleTester = require("eslint").RuleTester;
-
-
-//------------------------------------------------------------------------------
-// Tests
-//------------------------------------------------------------------------------
 
 const ruleTester = new RuleTester({
     parserOptions: { ecmaVersion: 6, sourceType: 'module' }
 });
 
-ruleTester.run("path-checker", rule, {
+const aliasOptions = [
+    {
+        alias: '@'
+    }
+];
+
+ruleTester.run("public-api-imports", rule, {
     valid: [
         {
-            filename: "C:\\Users\\User\\Desktop\\my-project\\src\\entities\\Article",
-            code: "import { ArticleListItem } from '../../ui/ArticleListItem/ArticleListItem'",
+            code: "import { addCommentFormActions, addCommentFormReducer } from '../../model/slices/addCommentFormSlice'",
             errors: [],
         },
+        {
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article'",
+            errors: [],
+            options: aliasOptions,
+        },
+        {
+            filename: 'C:\\Users\\slavio\\Desktop\\javascript\\production_project\\src\\entities\\file.test.ts',
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/testing'",
+            errors: [],
+            options: [{
+                alias: '@',
+                testFilesPatterns: ['**/*.test.ts', '**/*.test.ts', '**/StoreDecorator.tsx']
+            }],
+        },
+        {
+            filename: 'C:\\Users\\slavio\\Desktop\\javascript\\production_project\\src\\entities\\StoreDecorator.tsx',
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/testing'",
+            errors: [],
+            options: [{
+                alias: '@',
+                testFilesPatterns: ['**/*.test.ts', '**/*.test.ts', '**/StoreDecorator.tsx']
+            }],
+        }
     ],
 
     invalid: [
         {
-            filename: "C:\\Users\\User\\Desktop\\my-project\\src\\entities\\Article",
-            code: "import { ArticleListItem } from '@/entities/Article/ui/ArticleListItem/ArticleListItem'",
-            errors: [{ message: "All paths must be relative within the slice" }],
-            options: [
-                {
-                    alias: '@'
-                }
-            ]
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/model/file.ts'",
+            errors: [{ message: "Absolute import is allowed from Public API file only (index.ts)" }],
+            options: aliasOptions,
         },
         {
-            filename: "C:\\Users\\User\\Desktop\\my-project\\src\\entities\\Article",
-            code: "import { ArticleListItem } from 'entities/Article/ui/ArticleListItem/ArticleListItem'",
-            errors: [{ message: "All paths must be relative within the slice" }],
+            filename: 'C:\\Users\\slavio\\Desktop\\javascript\\production_project\\src\\entities\\StoreDecorator.tsx',
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/testing/file.tsx'",
+            errors: [{ message: "Absolute import is allowed from Public API file only (index.ts)" }],
+            options: [{
+                alias: '@',
+                testFilesPatterns: ['**/*.test.ts', '**/*.test.ts', '**/StoreDecorator.tsx']
+            }],
         },
+        {
+            filename: 'C:\\Users\\slavio\\Desktop\\javascript\\production_project\\src\\entities\\forbidden.ts',
+            code: "import { addCommentFormActions, addCommentFormReducer } from '@/entities/Article/testing'",
+            errors: [{ message: "Absolute import is allowed from Public API file only (index.ts)" }],
+            options: [{
+                alias: '@',
+                testFilesPatterns: ['**/*.test.ts', '**/*.test.ts', '**/StoreDecorator.tsx']
+            }],
+        }
     ],
 });
